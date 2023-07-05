@@ -9,7 +9,7 @@ catch {
 
 #variable defnitions
 $SourcePath = .\JobAssignment.exe
-$appVer = "2.1"
+$appVer = "v2.1"
 $userDesk = "C:\Users\$user\Desktop"
 $altDesk = "C:\Users\$user.HMFEXPRESS\Desktop"
 $oneDriveDesk = "C:\Users\$user\OneDrive - Senneca Holdings\Desktop"
