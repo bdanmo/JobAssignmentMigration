@@ -9,6 +9,7 @@ catch {
 
 #variable defnitions
 $SourcePath = .\JobAssignment.exe
+$appVer = "2.1"
 $userDesk = "C:\Users\$user\Desktop"
 $altDesk = "C:\Users\$user.HMFEXPRESS\Desktop"
 $oneDriveDesk = "C:\Users\$user\OneDrive - Senneca Holdings\Desktop"
@@ -23,12 +24,30 @@ function InstallToPath {
 
     try {
         Write-Output "Copying to $path"
-        $destPath = "$path\JobAssignment.exe"
+        $destPath = "$path\JobAssignment_$appVer.exe"
         Copy-Item $SourcePath $destPath -Force
         Write-Output "Success!"
     }
     catch {
         Write-Error "Error copying to ${path}: $Error"
+    }
+}
+
+#function to uninstall prior versions at path, with nice user-friendly output
+function UninstallFromPath {
+    param (
+        [Parameter(Mandatory = $true)]
+        [string]$path
+    )
+
+    try {
+        #remove files that begin with JobAssignment but do not end with the current version
+        Write-Output "Removing from $path"
+        Get-ChildItem $path -Filter "JobAssignment*.exe" | Where-Object { $_.Name -notlike "*_$appVer.exe" } | Remove-Item -Force
+        Write-Output "Success!"
+    }
+    catch {
+        Write-Error "Error removing from ${path}: $Error"
     }
 }
 
@@ -42,16 +61,20 @@ try {
         #test each path and install if it exists
         if (Test-Path $userDesk) {
             InstallToPath $userDesk
+            UninstallFromPath $userDesk
         }
         elseif (Test-Path $altDesk) {
             InstallToPath $altDesk
+            UninstallFromPath $altDesk
         }
 
         if (Test-Path $oneDriveDesk) {
             InstallToPath $oneDriveDesk
+            UninstallFromPath $oneDriveDesk
         }
         elseif (Test-Path $altOneDriveDesk) {
             InstallToPath $altOneDriveDesk
+            UninstallFromPath $altOneDriveDesk
         }
     }
 
