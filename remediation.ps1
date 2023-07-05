@@ -8,7 +8,7 @@ catch {
 }
 
 #variable defnitions
-$SourcePath = .\JobAssignment.exe
+$SourcePath = ".\JobAssignment.exe"
 $appVer = "v2.1"
 $userDesk = "C:\Users\$user\Desktop"
 $altDesk = "C:\Users\$user.HMFEXPRESS\Desktop"
@@ -23,13 +23,13 @@ function InstallToPath {
     )
 
     try {
-        Write-Output "Copying to $path"
+        Write-Output "Copying $SourcePath as JobAssignment_$appVer to $path"
         $destPath = "$path\JobAssignment_$appVer.exe"
-        Copy-Item $SourcePath $destPath -Force
-        Write-Output "Success!"
+        Copy-Item $SourcePath $destPath -Force -ErrorAction Stop
+        Write-Output "Success! File: $destPath"
     }
     catch {
-        Write-Error "Error copying to ${path}: $Error"
+        Write-Output "Error copying to ${path}: $Error"
     }
 }
 
@@ -42,8 +42,8 @@ function UninstallFromPath {
 
     try {
         #remove files that begin with JobAssignment but do not end with the current version
-        Write-Output "Removing from $path"
-        Get-ChildItem $path -Filter "JobAssignment*.exe" | Where-Object { $_.Name -notlike "*_$appVer.exe" } | Remove-Item -Force
+        Write-Output "Removing older versions from $path"
+        Get-ChildItem $path -Filter "JobAssignment*.exe" | Where-Object { $_.Name -notlike "JobAssignment_$appVer.exe" } | Remove-Item -Force
         Write-Output "Success!"
     }
     catch {
